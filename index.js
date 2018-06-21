@@ -1,4 +1,5 @@
 const express = require('express')
+const Joi = require('joi')
 const app = express()
 
 app.use(express.json())
@@ -32,6 +33,15 @@ app.get(baseCourseUrl + ':id', (req, res) => {
 })
 
 app.post(baseCourseUrl, (req, res) => {
+
+  let schema = { name: Joi.string().min(3).required() }
+  let validation = Joi.validate(req.body, schema)
+
+  if (validation.error) {
+    res.status(400).send(validation.error.details[0].message)
+    return
+  }
+  
   let newCourse = {
     id: courses.length + 1,
     name: req.body.name
