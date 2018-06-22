@@ -73,4 +73,18 @@ app.put(baseCourseUrl + '/:id', (req, res) => {
   res.send(course)
 })
 
+app.delete(baseCourseUrl + '/:id', (req, res) =>{
+  let course = courses.find(course => course.id == req.params.id)
+
+  if(!course) {
+    res.status(404).send('The course with the given ID was not found!')
+    return
+  }
+
+  let courseIndex = courses.indexOf(course)
+  courses.splice(courseIndex, 1)
+
+  res.send(course)
+})
+
 app.listen(port, () => console.log(`Listening on port ${port}...`))
