@@ -70,7 +70,7 @@ app.put(baseCourseUrl + '/:id', (req, res) => {
   }
 
   course.name = req.body.name
-  return course
+  res.send(course)
 })
 
 app.listen(port, () => console.log(`Listening on port ${port}...`))
