@@ -8,8 +8,14 @@ router.get('/', (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
+    let product = {
+        name: req.body.name,
+        price: req.body.price
+    }
+
     res.status(200).json({
-        message: 'Handling POST requests to /products'
+        message: 'Handling POST requests to /products',
+        product: product
     })
 })
 
