@@ -1,11 +1,14 @@
 const express = require('express')
 const morgan = require('morgan')
 const bodyParser = require('body-parser')
+const mongoose = require('mongoose')
 
 const productRouter = require('./api/routes/products')
 const orderRouter = require('./api/routes/orders')
 
 const app = express()
+
+mongoose.connect(`mongodb://shoppingadmin:${process.env.MONGO_PW}@localhost:27017/shopping`)
 
 app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({extended: false}))
