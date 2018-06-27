@@ -5,7 +5,7 @@ const Product = require('../models/product')
 
 const router = express.Router()
 
-const fullPath = 'http://localhost:3000/api/products'
+const fullPath = 'http://localhost:3000/api/products/'
 
 router.get('/', (req, res, next) => {
     Product.find()
@@ -45,7 +45,7 @@ router.post('/', (req, res, next) => {
 
     product.save()
         .then(result => {
-            res.status(200).json({
+            res.status(201).json({
                 message: 'Product created!',
                 createdProduct: {
                     name: result.name,
