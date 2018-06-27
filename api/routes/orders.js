@@ -11,6 +11,7 @@ const fullPath = 'http://localhost:3000/api/orders/'
 router.get('/', (req, res, next) => {
     Order.find()
         .select('_id productId quantity')
+        .populate('productId', 'name')
         .exec()
         .then(docs => {
             let response = {
@@ -19,7 +20,7 @@ router.get('/', (req, res, next) => {
                     return {
                         _id: doc._id,
                         productId: doc.productId,
-                        quantity: quantity,
+                        quantity: doc.quantity,
                         request: {
                             type: 'GET',
                             url: fullPath + doc._id
@@ -39,7 +40,7 @@ router.post('/', (req, res, next) => {
             if(!result) {
                 return res.status(404).json({ message: 'Product not found!' })
             }
-            
+
             let order = new Order({
                 _id: mongoose.Types.ObjectId(),
                 productId: req.body.productId,
@@ -74,6 +75,7 @@ router.get('/:orderId', (req, res, next) => {
 
     Order.findById(id)
         .select('_id productId quantity')
+        .populate('productId')        
         .exec()
         .then(result => {
             if(result)
