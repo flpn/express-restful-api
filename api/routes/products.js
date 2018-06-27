@@ -11,17 +11,17 @@ router.get('/', (req, res, next) => {
     Product.find()
         .select('name price _id')
         .exec()
-        .then(docs => {
+        .then(products => {
             let response = {
-                count: docs.length,
-                products: docs.map(doc => {
+                count: products.length,
+                products: products.map(product => {
                     return {
-                        name: doc.name,
-                        price: doc.price,
-                        _id: doc._id,
+                        name: product.name,
+                        price: product.price,
+                        _id: product._id,
                         request: {
                             type: 'GET',
-                            url: fullPath + doc._id
+                            url: fullPath + product._id
                         }
                     }
                 })
@@ -44,16 +44,16 @@ router.post('/', (req, res, next) => {
     })
 
     product.save()
-        .then(result => {
+        .then(product => {
             res.status(201).json({
                 message: 'Product created!',
                 createdProduct: {
-                    name: result.name,
-                    price: result.price,
-                    _id: result._id,
+                    name: product.name,
+                    price: product.price,
+                    _id: product._id,
                     request: {
                         type: 'GET',
-                        url: fullPath + result._id
+                        url: fullPath + product._id
                     }
                 }
             })
@@ -71,9 +71,9 @@ router.get('/:productId', (req, res, next) => {
     Product.findById(id)
         .select('name price _id')
         .exec()
-        .then(doc => {
-            if(doc)
-                res.status(200).json(doc)
+        .then(product => {
+            if(product)
+                res.status(200).json(product)
             else
                 res.status(404).json({message: 'No valid entry found for the provided ID'})
         })
@@ -86,14 +86,22 @@ router.get('/:productId', (req, res, next) => {
 
 router.put('/:productId', (req, res, next) => {
     let id = req.params.productId
-    let updatedProperties = {}
 
-    for(let prop of req.body) {
-        updatedProperties[prop.propName] = prop.value
-    }
-
-    Product.update({_id: id}, {$set: updatedProperties})
+    Product.findById(id)
         .exec()
+        .then(product => {
+            if(!product) {
+                return res.status(404).json({ message: 'No valid entry found for the provided ID' })
+            }
+
+            let updatedProperties = {}
+
+            for(let prop of req.body) {
+                updatedProperties[prop.propName] = prop.value
+            }
+
+            return Product.update({_id: id}, {$set: updatedProperties}).exec()
+        })
         .then(result => {
             res.status(200).json({
                 message: 'Product updated!',
@@ -113,8 +121,15 @@ router.put('/:productId', (req, res, next) => {
 router.delete('/:productId', (req, res, next) => {
     let id = req.params.productId
 
-    Product.remove({_id: id})
+    Product.findById(id)
         .exec()
+        .then(product => {
+            if(!product) {
+                return res.status(404).json({ message: 'No valid entry found for the provided ID' })
+            }
+
+            return Product.remove({_id: id}).exec()
+        })
         .then(result => {
             res.status(200).json({
                 message: `Product ${id} deleted!`
