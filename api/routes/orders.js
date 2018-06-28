@@ -10,20 +10,20 @@ const fullPath = 'http://localhost:3000/api/orders/'
 
 router.get('/', (req, res, next) => {
     Order.find()
-        .select('_id productId quantity')
-        .populate('productId', 'name')
+        .select('_id product quantity')
+        .populate('product', 'name')
         .exec()
-        .then(docs => {
+        .then(orders => {
             let response = {
-                count: docs.length,
-                orders: docs.map(doc => {
+                count: orders.length,
+                orders: orders.map(order => {
                     return {
-                        _id: doc._id,
-                        productId: doc.productId,
-                        quantity: doc.quantity,
+                        _id: order._id,
+                        product: order.product,
+                        quantity: order.quantity,
                         request: {
                             type: 'GET',
-                            url: fullPath + doc._id
+                            url: fullPath + order._id
                         }
                     }
                 })
@@ -34,31 +34,31 @@ router.get('/', (req, res, next) => {
 })
 
 router.post('/', (req, res, next) => {
-    Product.findById(req.body.productId)
+    Product.findById(req.body.product)
         .exec()
-        .then(result => {
-            if(!result) {
+        .then(product => {
+            if(!product) {
                 return res.status(404).json({ message: 'Product not found!' })
             }
 
             let order = new Order({
                 _id: mongoose.Types.ObjectId(),
-                productId: req.body.productId,
+                product: req.body.product,
                 quantity: req.body.quantity
             })
         
             return order.save()
         })
-        .then(result => {
+        .then(order => {
             res.status(201).json({
                 message: 'Order created',
                 createdOrder: {
-                    _id: result._id,
-                    productId: result.productId,
-                    quantity: result.quantity,
+                    _id: order._id,
+                    product: order.product,
+                    quantity: order.quantity,
                     request: {
                         type: 'GET',
-                        url: fullPath + result._id
+                        url: fullPath + order._id
                     }
                 }
             })
@@ -74,12 +74,12 @@ router.get('/:orderId', (req, res, next) => {
     let id = req.params.orderId
 
     Order.findById(id)
-        .select('_id productId quantity')
-        .populate('productId')        
+        .select('_id product quantity')
+        .populate('product', 'name price')        
         .exec()
-        .then(result => {
-            if(result)
-                res.status(200).json(result)
+        .then(order => {
+            if(order)
+                res.status(200).json(order)
             else
                 res.status(404).json({ message: 'None order with the given ID was found!' })
         })
@@ -90,16 +90,23 @@ router.get('/:orderId', (req, res, next) => {
         })
 })
 
-router.patch('/:orderId', (req, res, next) => {
+router.put('/:orderId', (req, res, next) => {
     let id = req.params.orderId
-    let updatedProperties = {}
-
-    for(let prop of req.body) {
-        updatedProperties[prop.propName] = prop.value
-    }
-
-    Order.update({ _id: id }, { $set: updatedProperties })
+    
+    Order.findById(id)
         .exec()
+        .then(order => {
+            if(!order) 
+                return res.status(404).json({ message: 'None order with the given ID was found!' })
+            
+            let updatedProperties = {}
+        
+            for(let prop of req.body) {
+                updatedProperties[prop.propName] = prop.value
+            }
+            
+            return Order.update({ _id: id }, { $set: updatedProperties }).exec()
+        })
         .then(result => {
             res.status(200).json({
                 message: 'Order updated!',
@@ -119,8 +126,14 @@ router.patch('/:orderId', (req, res, next) => {
 router.delete('/:orderId', (req, res, next) => {
     let id = req.params.orderId
 
-    Order.remove({ _id: id })
+    Order.findById(id)
         .exec()
+        .then(order => {
+            if(!order)
+                return res.status(404).json({ message: 'None order with the given ID was found!' })
+            
+            return Order.remove({ _id: id }).exec()
+        })
         .then(result => {
             res.status(200).json({
                 message: `Order ${id} was deleted!`
@@ -131,11 +144,6 @@ router.delete('/:orderId', (req, res, next) => {
                 error: err
             })
         })
-
-    res.status(200).json({
-        message: 'Order deleted',
-        orderId: req.params.orderId
-    })
 })
 
 

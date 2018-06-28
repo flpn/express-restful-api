@@ -9,6 +9,7 @@ const orderRouter = require('./api/routes/orders')
 const app = express()
 
 mongoose.connect(`mongodb://shoppingadmin:${process.env.MONGO_PW}@localhost:27017/shopping`)
+mongoose.Promise = global.Promise
 
 app.use(morgan('dev'))
 app.use(bodyParser.urlencoded({extended: false}))
