@@ -31,6 +31,7 @@ app.use((req, res, next) => {
     next()
 })
 
+app.use('/uploads', express.static('uploads'))
 app.use('/api/products', productRouter)
 app.use('/api/orders', orderRouter)
 
