@@ -6,6 +6,7 @@ const cors = require('cors')
 
 const productRouter = require('./api/routes/products')
 const orderRouter = require('./api/routes/orders')
+const userRouter = require('./api/routes/user')
 
 const app = express()
 
@@ -20,6 +21,7 @@ app.use(cors())
 app.use('/uploads', express.static('uploads'))
 app.use('/api/products', productRouter)
 app.use('/api/orders', orderRouter)
+app.use('/api/user', userRouter)
 
 app.use((req, res, next) => {
     const error = new Error('URL not found!')
