@@ -4,6 +4,7 @@ const bodyParser = require('body-parser')
 const mongoose = require('mongoose')
 const cors = require('cors')
 
+const checkAuth = require('./api/middlewares/check-auth')
 const productRouter = require('./api/routes/products')
 const orderRouter = require('./api/routes/orders')
 const userRouter = require('./api/routes/user')
@@ -20,7 +21,7 @@ app.use(cors())
 
 app.use('/uploads', express.static('uploads'))
 app.use('/api/products', productRouter)
-app.use('/api/orders', orderRouter)
+app.use('/api/orders', checkAuth, orderRouter)
 app.use('/api/user', userRouter)
 
 app.use((req, res, next) => {

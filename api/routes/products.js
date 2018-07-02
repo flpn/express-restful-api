@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose')
 const multer = require('multer')
 
+const checkAuth = require('../middlewares/check-auth')
 const Product = require('../models/product')
 
 const router = express.Router()
@@ -62,7 +63,7 @@ router.get('/', (req, res, next) => {
         })
 })
 
-router.post('/', upload.single('productImage'), (req, res, next) => {
+router.post('/', checkAuth, upload.single('productImage'), (req, res, next) => {
     let product = new Product({
         _id: new mongoose.Types.ObjectId(),
         name: req.body.name,
@@ -112,7 +113,7 @@ router.get('/:productId', (req, res, next) => {
         })
 })
 
-router.put('/:productId', (req, res, next) => {
+router.put('/:productId', checkAuth, (req, res, next) => {
     let id = req.params.productId
 
     Product.findById(id)
@@ -146,7 +147,7 @@ router.put('/:productId', (req, res, next) => {
         })
 })
 
-router.delete('/:productId', (req, res, next) => {
+router.delete('/:productId', checkAuth, (req, res, next) => {
     let id = req.params.productId
 
     Product.findById(id)
