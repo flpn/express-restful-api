@@ -2,11 +2,13 @@ const mongoose = require('mongoose')
 
 const Product = require('../models/product')
 
+const fullPath = 'http://localhost:3000/api/products/'
+
 exports.get_all_products = (req, res, next) => {
     Product.find()
-        .select('name price _id productImage')
-        .exec()
-        .then(products => {
+    .select('name price _id productImage')
+    .exec()
+    .then(products => {
             let response = {
                 count: products.length,
                 products: products.map(product => {
@@ -58,7 +60,7 @@ exports.create_product = (req, res, next) => {
         price: req.body.price,
         productImage: req.file.path
     })
-
+    
     product.save()
         .then(product => {
             res.status(201).json({

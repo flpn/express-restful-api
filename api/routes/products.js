@@ -6,8 +6,6 @@ const ProductController = require('../controllers/product')
 
 const router = express.Router()
 
-const fullPath = 'http://localhost:3000/api/products/'
-
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
         cb(null, './uploads/')
