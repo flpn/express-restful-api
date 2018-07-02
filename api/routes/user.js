@@ -30,6 +30,9 @@ router.post('/signup', (req, res, next) => {
                         .then(newUser => {
                             res.status(201).json({ message: `User ${newUser.email} created!` })
                         })
+                        .catch(err => {
+                            res.status(500).json({ error: err })            
+                        })
                 }
             })
         })
