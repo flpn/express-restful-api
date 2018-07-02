@@ -4,8 +4,6 @@ const router = express.Router()
 
 const OrderController = require('../controllers/order')
 
-const fullPath = 'http://localhost:3000/api/orders/'
-
 router.get('/', OrderController.get_all_orders)
 router.get('/:orderId', OrderController.get_order)
 router.post('/', OrderController.create_order)

@@ -3,6 +3,8 @@ const mongoose = require('mongoose')
 const Order = require('../models/order')
 const Product = require('../models/product')
 
+const fullPath = 'http://localhost:3000/api/orders/'
+
 exports.get_all_orders = (req, res, next) => {
     Order.find()
         .select('_id product quantity')
@@ -50,9 +52,8 @@ exports.get_order = (req, res, next) => {
 
 exports.create_order = (req, res, next) => {
     Product.findById(req.body.product)
-        .exec()
-        .then(product => {
-            console.log(product)
+    .exec()
+    .then(product => {
             if(!product) {
                 return res.status(404).json({ message: 'Product not found!' })
             }
